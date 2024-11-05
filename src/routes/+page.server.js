@@ -11,8 +11,18 @@ export async function load(params) {
 	var page = params.url.searchParams.get('p');
 	var indexed = params.url.searchParams.get('indexed');
 	var category = params.url.searchParams.get('cat');
+	var sortBy = params.url.searchParams.get('sortBy');
+	var order = params.url.searchParams.get('order');
 
-	console.log(category);
+	if (order == 'asc') {
+		order = 1;
+	} else {
+		order = -1;
+	}
+
+	if (category == 0){
+		category = null;
+	}
 	
 	var skip = 0;
 	if (!page) {
@@ -22,12 +32,26 @@ export async function load(params) {
 		skip = (page - 1) * 10;
 	}
 
+
+
 	let find = {};
+	let sort = {};
+
+	if (sortBy === 'pub') {
+		sort['published_at'] = order;
+	} else if (sortBy === 'crawl') {
+		sort['main.last_crawl_time'] = order;
+	} else if (sortBy === 'update') {
+		sort['last_updated'] = order;
+	}
+
+
+
 	if (indexed === 'false') {
 		find['main.indexed'] = false;
 	}
 
-	find['main'] = {};
+
 
 	if (category) {
 		find['category_id'] = parseInt(category);
@@ -46,7 +70,7 @@ export async function load(params) {
 		await client.connect();
 		const database = client.db('psc');
 		const collection = database.collection('posts');
-		posts = await collection.find(find).sort({ published_at: -1 }).limit(10).skip(skip).toArray();
+		posts = await collection.find(find).sort(sort).limit(500).skip(skip).toArray();
 		await client.close();
 		
 	} catch (error) {

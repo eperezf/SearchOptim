@@ -2,6 +2,7 @@ import { MongoClient, ServerApiVersion } from 'mongodb';
 import { MONGODB_URI } from '$env/static/private';
 import { google } from 'googleapis';
 import dayjs from 'dayjs';
+import { json } from '@sveltejs/kit';
 
 const auth = new google.auth.GoogleAuth({
 	keyFile: 'credentials.json',
@@ -13,31 +14,9 @@ const auth = new google.auth.GoogleAuth({
 const searchconsole = google.searchconsole('v1');
 const uri = MONGODB_URI;
 
-
-/** @type {import('./$types').PageServerLoad} */
-export async function load() {
-	const client = new MongoClient(uri, {
-		serverApi: {
-			version: ServerApiVersion.v1,
-			strict: true,
-			deprecationErrors: true,
-		}
-	});
-
-	let find = {};
-	find['main'] = {};
-	var posts = []
-	try {
-		await client.connect();
-		const database = client.db('psc');
-		const collection = database.collection('posts');
-		posts = await collection.find(find).sort({ published_at: -1 }).toArray();
-	} catch (error) {
-		console.log(error);
-	}
-
-	for await (const post of posts) {
-		const slug = post.slug;
+/** @type {import('./$types').RequestHandler} */
+export async function GET(event) {
+	const slug = event.params.slug;
 		const url = 'https://pisapapeles.net/' + slug + '/';
 		console.log("updating post: " + slug);
 
@@ -279,8 +258,6 @@ export async function load() {
 				console.log(error);
 			}
 		}
-		
-	}
-	
-  return {};
+		await client.close();
+    return json({success: true});
 };

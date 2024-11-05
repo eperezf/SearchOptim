@@ -7,6 +7,6 @@
 	<a href="/" class="hover:bg-slate-600 transition-all p-2 rounded-md">Inicio</a>
 	<a href="/inspect" class="hover:bg-slate-600 transition-all p-2 rounded-md">Inspector</a>
 </div>
-<div class="p-2 bg-slate-100 rounded-md m-2">
+<div class="p-2 bg-slate-100 rounded-md m-2 border border-white/20">
 	<slot />
 </div>
