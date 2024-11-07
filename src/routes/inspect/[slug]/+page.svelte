@@ -12,7 +12,7 @@
 		dayjs.extend(relativeTime);
 		Chart.register(annotationPlugin);
 		
-    export let data;
+    let { data }  = $props();
 		export let post = data.post;
 		export let stats = data.statistics;
 		export let modHistory = data.modHistory;
