@@ -13,9 +13,10 @@
 		Chart.register(annotationPlugin);
 		
     let { data }  = $props();
-		export let post = data.post;
-		export let stats = data.statistics;
-		export let modHistory = data.modHistory;
+		
+		const post = data.post;
+		const stats = data.statistics;
+		const modHistory = data.modHistory;
 		
 		/** @type {{ [key: string]: { type: string, xMin: string, xMax: string, borderColor: string, borderWidth: number } }} */
 		var annotations = {};
@@ -31,17 +32,17 @@
 			stats[i].x = i+1;
 		}
 
-		var positionTrend30 = {slope:0}
-		var positionTrend60 = {slope:0}
-		var positionTrend90 = {slope:0}
+		var positionTrend30 = $state({slope:0});
+		var positionTrend60 = $state({slope:0});
+		var positionTrend90 = $state({slope:0});
 
-		var impressionsTrend30 = {slope:0}
-		var impressionsTrend60 = {slope:0}
-		var impressionsTrend90 = {slope:0}
+		var impressionsTrend30 = $state({slope:0});
+		var impressionsTrend60 = $state({slope:0});
+		var impressionsTrend90 = $state({slope:0});
 
-		var clicksTrend30 = {slope:0}
-		var clicksTrend60 = {slope:0}
-		var clicksTrend90 = {slope:0}
+		var clicksTrend30 = $state({slope:0});
+		var clicksTrend60 = $state({slope:0});
+		var clicksTrend90 = $state({slope:0});
 
 		onMount(() => {
 			const days30 = stats.slice(-30)
