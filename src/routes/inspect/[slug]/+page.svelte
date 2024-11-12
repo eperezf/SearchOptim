@@ -50,25 +50,16 @@
 			const days90 = stats.slice(-90)
 
 			positionTrend30 = createTrend(days30, 'x','position');
-			console.log(positionTrend30);
 			positionTrend60 = createTrend(days60, 'x','position');
-			console.log(positionTrend60);
 			positionTrend90 = createTrend(days90, 'x','position');
-			console.log(positionTrend90);
 
 			impressionsTrend30 = createTrend(days30, 'x','impressions');
-			console.log(impressionsTrend30);
 			impressionsTrend60 = createTrend(days60, 'x','impressions');
-			console.log(impressionsTrend60);
 			impressionsTrend90 = createTrend(days90, 'x','impressions');
-			console.log(impressionsTrend90);
 
 			clicksTrend30 = createTrend(days30, 'x','clicks');
-			console.log(clicksTrend30);
 			clicksTrend60 = createTrend(days60, 'x','clicks');
-			console.log(clicksTrend60);
 			clicksTrend90 = createTrend(days90, 'x','clicks');
-			console.log(clicksTrend90);
 
 			const clicksCtx = document.getElementById('gscClicksChart')
 	
