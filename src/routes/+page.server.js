@@ -59,6 +59,7 @@ export async function load(params) {
 
 	var posts = []
 	const client = new MongoClient(uri, {
+		family: 4,
 		serverApi: {
 			version: ServerApiVersion.v1,
 			strict: true,

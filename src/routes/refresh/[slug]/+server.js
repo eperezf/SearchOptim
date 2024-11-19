@@ -66,7 +66,7 @@ export async function GET(event) {
 			categoryName: "",
 			tags: wpPost.tags,
 			created: wpPost.yoast_head_json.article_published_time,
-			modified: wpPost.yoast_head_json.article_modified_time,
+			modified: wpPost.yoast_head_json.article_modified_time ? wpPost.yoast_head_json.article_modified_time : wpPost.yoast_head_json.article_published_time,
 		}
 
 		// Get category from Wordpress API
@@ -74,8 +74,11 @@ export async function GET(event) {
 		const resCat = await fetch('https://pisapapeles.net/wp-json/wp/v2/categories/' + wpData.categoryId);
 		const catData = await resCat.json();
 		wpData.categoryName = catData.name;
+
+		// TODO: Get the tags from Wordpress API
 		
 
+		// TODO: Get the latest stats since the last update instead of the creation date
 		// Get the latest stats
 		console.log("getting stats from GSC");
 		const startDate = dayjs(wpData.created).format('YYYY-MM-DD');
@@ -113,7 +116,7 @@ export async function GET(event) {
 					date: row.keys[0],
 					clicks: row.clicks,
 					impressions: row.impressions,
-					position: row.position,
+					position: row.position == 0 ? null : row.position,
 					ctr: row.ctr
 				});
 			});
@@ -152,7 +155,6 @@ export async function GET(event) {
 			const latestDay = dayjs(latestDate);
 			const todayDay = dayjs();
 			const diff = todayDay.diff(latestDay, 'days');
-			console.log(diff);
 			if (diff > 1) {
 				for (let i = 1; i < diff; i++) {
 					missingDays.push(latestDay.add(i, 'day').format('YYYY-MM-DD'));

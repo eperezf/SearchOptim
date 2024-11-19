@@ -39,6 +39,9 @@ export async function load(params) {
 		console.log(error);
 	}	
 
+	console.log(post);
+	
+
 	// Get statistics from gsc collection
 	var statistics = []
 	try {
@@ -118,7 +121,7 @@ export const actions = {
 			categoryName: "",
 			tags: wpPost.tags,
 			created: wpPost.yoast_head_json.article_published_time,
-			modified: wpPost.yoast_head_json.article_modified_time,
+			modified: wpPost.yoast_head_json.article_modified_time ? wpPost.yoast_head_json.article_modified_time : wpPost.yoast_head_json.article_published_time,
 		}
 
 		// Get category from Wordpress API
@@ -180,6 +183,7 @@ export const actions = {
 				deprecationErrors: true,
 			}
 		});
+		
 		await client.connect();
 		const database = client.db('psc');
 		const gscCollection = database.collection('gsc');

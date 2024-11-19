@@ -17,6 +17,12 @@
 		const post = data.post;
 		const stats = data.statistics;
 		const modHistory = data.modHistory;
+
+	
+		stats.forEach(stat => {
+			stat.position == 0 ? stat.position = null : stat.position;
+		});
+		
 		
 		/** @type {{ [key: string]: { type: string, xMin: string, xMax: string, borderColor: string, borderWidth: number } }} */
 		var annotations = {};
@@ -69,6 +75,9 @@
 					datasets: [{
 						label: 'Clicks',
 						data: stats,
+						pointStyle: 'circle',
+						pointRadius: 4,
+      			pointHoverRadius: 8,
 					}]
 				},
 				options: {
@@ -97,6 +106,9 @@
 					datasets: [{
 						label: 'Impresiones',
 						data: stats,
+						pointStyle: 'circle',
+						pointRadius: 4,
+      			pointHoverRadius: 8,
 					}]
 				},
 				options: {
@@ -127,12 +139,23 @@
 			}
 
 			const positionCtx = document.getElementById('gscPositionChart')
+			const skipped = (positionCtx, stats) => positionCtx.p0.skip || positionCtx.p1.skip ? stats : undefined;
+			const down = (ctx, stats) => ctx.p0.parsed.y > ctx.p1.parsed.y ? stats : undefined;
+
 			new Chart(positionCtx, {
 				type: 'line',
 				data: {
 					datasets: [{
 						label: 'Posicion',
 						data: stats,
+						spanGaps: true,
+						pointStyle: 'circle',
+						pointRadius: 4,
+      			pointHoverRadius: 8,
+
+						segment: {
+							borderDash: ctx => skipped(ctx, [6, 6]),
+						}
 					}]
 				},
 				options: {
