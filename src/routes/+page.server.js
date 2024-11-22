@@ -7,6 +7,7 @@ const uri = MONGODB_URI;
 
 /** @type {import('./$types').PageServerLoad} */
 export async function load(params) {
+	console.log('Loading page');
 	
 	var page = params.url.searchParams.get('p');
 	var indexed = params.url.searchParams.get('indexed');
@@ -80,5 +81,6 @@ export async function load(params) {
 	}
 	
 	const pageCount = Math.ceil(posts.length / 10);
+	console.log('returning posts');
   return {posts: structuredClone(posts), postCount: posts.length, pageCount: pageCount, page: page};
 };

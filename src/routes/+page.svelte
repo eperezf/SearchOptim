@@ -1,6 +1,8 @@
 <script>
 	/** @type {import('./$types').PageData}*/
 	let { data }  = $props();
+	$inspect(data);
+	let posts = $state(data.posts)
 
 	import Indexed from '$lib/Indexed.svelte';
 
@@ -10,6 +12,7 @@
 	import { onMount } from 'svelte';
 	dayjs.locale('es');
 	dayjs.extend(relativeTime);
+
 	
 
 	const categories = [
@@ -39,16 +42,27 @@
 	 * @param {any} wordpress_id
 	 */
 	async function refresh(slug, wordpress_id) {
+		console.log(`Refreshing ${slug} ID ${wordpress_id}`);
+		
 		let button = document.getElementById(wordpress_id)
 		button.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Refrescando';
 		button.disabled = true;
 		let response = await fetch(`/refresh/${slug}`);
 		let json = await response.json();
 		if (json.success) {
-			button.innerHTML = '<i class="fa-solid fa-check"></i> Refrescado';
+			console.log(`Refreshed ${slug} ID ${wordpress_id}`);
+			
 		} else {
 			button.innerHTML = '<i class="fa-solid fa-times"></i> Error';
 		}
+		let updatedPost = json.post[0];
+		let postIndex = posts.findIndex(post => post.wordpress_id === wordpress_id);
+		if (postIndex !== -1) {
+
+			posts[postIndex] = updatedPost;
+		}
+		
+		
 	}	
 
 	onMount(() => {
@@ -124,10 +138,10 @@
 			</tr>
 		</thead> 
 		<tbody class="bg-slate-200">
-			{#each data.posts as post}
+			{#each posts as post}
 			<tr>
-				<td class="border border-slate-400 p-2"><p class="truncate">{post.title}</p></td>
-				<td class="border border-slate-400 p-2">{new Date(post.published_at).toLocaleString()}</td>
+				<td class="border border-slate-400 p-2"><p class="truncate" id="{post.wordpress_id}_title">{post.title}</p></td>
+				<td class="border border-slate-400 p-2" id="{post.wordpress_id}_publishDate">{new Date(post.published_at).toLocaleString()}</td>
 				<td class="border border-slate-400 p-2"><Indexed type="Main" value={post.main.indexed}/><Indexed type="AMP" value={post.amp.indexed}/></td>
 				<td class="border border-slate-400 p-2">{dayjs().to(dayjs(post.main.last_crawl_time))}</td>
 				<td class="border border-slate-400 p-2">{dayjs().to(dayjs(post.last_updated))}</td>

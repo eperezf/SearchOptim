@@ -39,9 +39,6 @@ export async function load(params) {
 		console.log(error);
 	}	
 
-	console.log(post);
-	
-
 	// Get statistics from gsc collection
 	var statistics = []
 	try {
@@ -129,12 +126,60 @@ export const actions = {
 		const resCat = await fetch('https://pisapapeles.net/wp-json/wp/v2/categories/' + wpData.categoryId);
 		const catData = await resCat.json();
 		wpData.categoryName = catData.name;
+
+
+		// Get the latest stat day from MongoDB
+		console.log("getting latest stat from MongoDB");
+		const client = new MongoClient(uri, {
+			serverApi: {
+				version: ServerApiVersion.v1,
+				strict: true,
+				deprecationErrors: true,
+			}
+		});
+		
+		await client.connect();
+		const database = client.db('psc');
+		const gscCollection = database.collection('gsc');
+		const latestStat = await gscCollection
+			.find({'slug': slug})
+			.sort({ date: -1 })
+			.limit(1)
+			.toArray();
+
+		const missingDays = []
+		let statStartDay = dayjs(wpData.created);
+		if (latestStat.length === 0) {
+			// If there are no stats, the missing days are the days between the post creation and today
+			const startDate = dayjs(wpData.created);
+			const today = dayjs();
+			const diff = today.diff(startDate, 'days');
+			for (let i = 0; i < diff; i++) {
+				missingDays.push(startDate.add(i, 'day').format('YYYY-MM-DD'));
+			}
+		} else {
+			// If there are stats, the missing days are the days between the latest stat and today
+			const latestDate = latestStat[0].date;
+			const latestDay = dayjs(latestDate);
+			statStartDay = latestDay;
+			const todayDay = dayjs();
+			const diff = todayDay.diff(latestDay, 'days');
+			console.log(diff);
+			if (diff > 1) {
+				for (let i = 1; i < diff; i++) {
+					missingDays.push(latestDay.add(i, 'day').format('YYYY-MM-DD'));
+				}
+			}
+		}
+
+
 		
 
 		// Get the latest stats
-		console.log("getting stats from GSC");
-		const startDate = dayjs(wpData.created).format('YYYY-MM-DD');
+		
+		const startDate = statStartDay.format('YYYY-MM-DD');
 		const today = dayjs().format('YYYY-MM-DD');
+		console.log(`getting stats from ${startDate} to ${today}`);
 		const urlStats = await searchconsole.searchanalytics.query({
 			auth: auth,
 			siteUrl: 'https://pisapapeles.net/',
@@ -174,47 +219,7 @@ export const actions = {
 			});
 		}
 
-		// Get the latest stat day from MongoDB
-		console.log("getting latest stat from MongoDB");
-		const client = new MongoClient(uri, {
-			serverApi: {
-				version: ServerApiVersion.v1,
-				strict: true,
-				deprecationErrors: true,
-			}
-		});
 		
-		await client.connect();
-		const database = client.db('psc');
-		const gscCollection = database.collection('gsc');
-		const latestStat = await gscCollection
-			.find({'slug': slug})
-			.sort({ date: -1 })
-			.limit(1)
-			.toArray();
-
-		const missingDays = []
-		if (latestStat.length === 0) {
-			// If there are no stats, the missing days are the days between the post creation and today
-			const startDate = dayjs(wpData.created);
-			const today = dayjs();
-			const diff = today.diff(startDate, 'days');
-			for (let i = 0; i < diff; i++) {
-				missingDays.push(startDate.add(i, 'day').format('YYYY-MM-DD'));
-			}
-		} else {
-			// If there are stats, the missing days are the days between the latest stat and today
-			const latestDate = latestStat[0].date;
-			const latestDay = dayjs(latestDate);
-			const todayDay = dayjs();
-			const diff = todayDay.diff(latestDay, 'days');
-			console.log(diff);
-			if (diff > 1) {
-				for (let i = 1; i < diff; i++) {
-					missingDays.push(latestDay.add(i, 'day').format('YYYY-MM-DD'));
-				}
-			}
-		}
 
 		// get the latest modification date from MongoDB
 		console.log("getting latest modification date from MongoDB");
