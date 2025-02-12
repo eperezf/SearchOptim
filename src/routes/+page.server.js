@@ -49,7 +49,7 @@ export async function load(params) {
 
 
 	if (indexed === 'false') {
-		find['main.indexed'] = false;
+		find['main.indexed'] = null;
 	}
 
 

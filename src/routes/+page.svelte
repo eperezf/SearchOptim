@@ -1,7 +1,6 @@
 <script>
 	/** @type {import('./$types').PageData}*/
 	let { data }  = $props();
-	$inspect(data);
 	let posts = $state(data.posts)
 
 	import Indexed from '$lib/Indexed.svelte';
@@ -149,7 +148,7 @@
 				<td class="border border-slate-400 p-2">
 					<a href="http://pisapapeles.net/{post.slug}" target="_blank" rel="noopener noreferrer" class="p-2 bg-slate-400 rounded-md"><i class="fa-solid fa-up-right-from-square"></i> Ir</a>
 					<a href="/inspect/{post.slug}" class="p-2 bg-slate-400 rounded-md"><i class="fa-solid fa-eye"></i> Inspeccionar</a>
-					{#if dayjs(new Date()).diff(dayjs(post.last_updated), 'day') > 1}
+					{#if dayjs(new Date()).diff(dayjs(post.last_updated), 'day') >= 1}
 					<button class="p-2 bg-slate-400 rounded-md" onclick={()=>refresh(post.slug, post.wordpress_id)} id={post.wordpress_id}><i class="fa-solid fa-arrows-rotate"></i> Refrescar</button>
 					{:else}
 					<button class="p-2 bg-slate-300 rounded-md" disabled><i class="fa-solid fa-check"></i> Refrescado</button>

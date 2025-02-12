@@ -39,6 +39,7 @@
 		"dayjs": "^1.11.13",
 		"googleapis": "^144.0.0",
 		"mongodb": "^6.9.0",
+		"redis": "^4.7.0",
 		"sitemapper": "^3.2.12",
 		"trendline": "^1.0.0"
 	}
