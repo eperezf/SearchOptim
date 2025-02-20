@@ -8,6 +8,9 @@
 
 	var posts = $state([]);
 
+	var remaining = $state(0)
+	var updated = $state(0)
+
 	if (browser) {
 		const evtSource = new EventSource("/redisUpdate");
 		evtSource.onmessage = (event) => {
@@ -15,10 +18,17 @@
 			if (eventJson.event == "created") {
 				posts.push(eventJson);
 			}
+			else if (eventJson.event == "remaining") {
+				remaining = eventJson.remaining
+			}
+			else if (eventJson.event == "updated") {
+				updated = eventJson.updated
+			}
 			else {
 				let objIndex = posts.findIndex(obj => obj.slug == eventJson.slug);
 				posts[objIndex] = eventJson;
 			}
+			
 		};
 	}
 
@@ -27,6 +37,9 @@
 
 <h1>Redis Check</h1>
 <div>
+	<div>Remaining posts: {remaining}</div>
+	<div>Updated posts: {updated}</div>
+	
 	<table class="table-fixed text-center border-collapse border border-slate-400 w-full">
 		<thead>
 			<tr>
