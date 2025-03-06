@@ -16,7 +16,7 @@ const uri = MONGODB_URI;
 
 /** @type {import('./$types').RequestHandler} */
 export async function GET(event) {
-	const slug = event.params.slug;
+	const slug = encodeURIComponent(event.params.slug).toLowerCase();
 		const url = 'https://pisapapeles.net/' + slug + '/';
 		console.log("updating post: " + slug);
 

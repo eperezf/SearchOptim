@@ -18,7 +18,7 @@ const uri = MONGODB_URI;
 
 /** @type {import('./$types').PageServerLoad} */
 export async function load(params) {
-	const slug = params.params.slug;
+	const slug = encodeURIComponent(params.params.slug).toLowerCase();
 	const url = 'https://pisapapeles.net/' + slug + '/';
 	var post = []
 	const client = new MongoClient(uri, {
