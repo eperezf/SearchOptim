@@ -132,8 +132,8 @@
 
 			annotations['firstPage'] = {
 				type: 'line',
-				yMin: 10,
-				yMax: 10,
+				yMin: 8,
+				yMax: 8,
 				borderColor: 'red',
 				borderWidth: 2,
 			}

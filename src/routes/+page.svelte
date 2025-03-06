@@ -85,7 +85,7 @@
 
 <div class="">Search</div>
 <div class="">Filtrar:</div>
-<form action="" method="get">
+<form action="" method="get" data-sveltekit-reload>
 	<div class="grid gap-2">
 		<div class="">
 			<span>Categoria:</span>
@@ -121,18 +121,16 @@
 	
 	<button type="submit" class="p-1 my-2 bg-slate-600 text-white border border-white/20 rounded-md">Buscar</button>
 </form>
-
-
-
 <div class="">
 	<table class="table-fixed text-center border-collapse border border-slate-400 w-full">
 		<thead>
 			<tr>
 				<th class="border border-slate-400 bg-slate-600 p-2 text-white w-5/12">Nota</th>
+				<th class="border border-slate-400 bg-slate-600 p-2 text-white w-1/12">Indexado</th>
 				<th class="border border-slate-400 bg-slate-600 p-2 text-white w-2/12">Publicado</th>
-				<th class="border border-slate-400 bg-slate-600 p-2 text-white w-2/12">Indexado</th>
-				<th class="border border-slate-400 bg-slate-600 p-2 text-white w-1/12">Último crawl</th>
-				<th class="border border-slate-400 bg-slate-600 p-2 text-white w-1/12">Último update</th>
+				<th class="border border-slate-400 bg-slate-600 p-2 text-white w-2/12">Actualizado</th>
+				<th class="border border-slate-400 bg-slate-600 p-2 text-white w-2/12">Último crawl</th>
+				<th class="border border-slate-400 bg-slate-600 p-2 text-white w-2/12">Último update</th>
 				<th class="border border-slate-400 bg-slate-600 p-2 text-white w-3/12">Acciones</th>
 			</tr>
 		</thead> 
@@ -140,18 +138,29 @@
 			{#each posts as post}
 			<tr>
 				<td class="border border-slate-400 p-2"><p class="truncate" id="{post.wordpress_id}_title">{post.title}</p></td>
-				<td class="border border-slate-400 p-2" id="{post.wordpress_id}_publishDate">{new Date(post.published_at).toLocaleString()}</td>
-				<td class="border border-slate-400 p-2"><Indexed type="Main" value={post.main.indexed}/><Indexed type="AMP" value={post.amp.indexed}/></td>
-				<td class="border border-slate-400 p-2">{dayjs().to(dayjs(post.main.last_crawl_time))}</td>
-				<td class="border border-slate-400 p-2">{dayjs().to(dayjs(post.last_updated))}</td>
+				<td class="border border-slate-400 p-2"><Indexed type="Main" value={post.main.indexed}/></td>
+				<td class="border border-slate-400 p-2" id="{post.wordpress_id}_publishDate">{dayjs(post.published_at).format('YYYY-MM-DD HH:mm')}</td>
+				<td class="border border-slate-400 p-2" id="{post.wordpress_id}_updateDate">{dayjs(post.modified_at).format('YYYY-MM-DD HH:mm')}</td>
+				{#if post.main.indexed}
+					{#if post.main.last_crawl_time < post.modified_at}
+					<td class="border border-slate-400 p-2 text-yellow-700 bg-yellow-200">{dayjs(post.main.last_crawl_time).format('YYYY-MM-DD HH:mm')}</td>
 
-				<td class="border border-slate-400 p-2">
-					<a href="http://pisapapeles.net/{post.slug}" target="_blank" rel="noopener noreferrer" class="p-2 bg-slate-400 rounded-md"><i class="fa-solid fa-up-right-from-square"></i> Ir</a>
-					<a href="/inspect/{post.slug}" class="p-2 bg-slate-400 rounded-md"><i class="fa-solid fa-eye"></i> Inspeccionar</a>
-					{#if dayjs(new Date()).diff(dayjs(post.last_updated), 'day') >= 1}
-					<button class="p-2 bg-slate-400 rounded-md" onclick={()=>refresh(post.slug, post.wordpress_id)} id={post.wordpress_id}><i class="fa-solid fa-arrows-rotate"></i> Refrescar</button>
 					{:else}
-					<button class="p-2 bg-slate-300 rounded-md" disabled><i class="fa-solid fa-check"></i> Refrescado</button>
+					<td class="border border-slate-400 p-2">{dayjs(post.main.last_crawl_time).format('YYYY-MM-DD HH:mm')}</td>
+
+					{/if}
+				{:else}
+				<td class="border border-slate-400 p-2 text-red-700 bg-red-200">No indexado</td>
+				{/if}
+				
+				<td class="border border-slate-400 p-2">{dayjs(post.last_updated).format('YYYY-MM-DD HH:mm')}</td>
+				<td class="border border-slate-400 p-2">
+					<a href="http://pisapapeles.net/{post.slug}" target="_blank" rel="noopener noreferrer" class="p-2 bg-slate-400 rounded-md text-sm"><i class="fa-solid fa-up-right-from-square"></i> Ir</a>
+					<a href="/inspect/{post.slug}" class="p-2 bg-slate-400 rounded-md text-sm"><i class="fa-solid fa-eye"></i> Inspeccionar</a>
+					{#if dayjs(new Date()).diff(dayjs(post.last_updated), 'day') >= 1}
+					<button class="p-2 bg-slate-400 rounded-md text-sm" onclick={()=>refresh(post.slug, post.wordpress_id)} id={post.wordpress_id}><i class="fa-solid fa-arrows-rotate"></i> Refrescar</button>
+					{:else}
+					<button class="p-2 bg-slate-300 rounded-md text-sm" disabled><i class="fa-solid fa-check"></i> Refrescado</button>
 					{/if}
 				</td>
 			</tr>
