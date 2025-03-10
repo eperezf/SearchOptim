@@ -3,8 +3,6 @@ import { MONGODB_URI } from '$env/static/private';
 
 /** @type {import('./$types').RequestHandler} */
 export async function GET(event) {
-	console.log("initializing unknowns check");
-	
 
 	const client = new MongoClient(MONGODB_URI, {
 			serverApi: {
@@ -15,14 +13,13 @@ export async function GET(event) {
 		});
 
 	let find = {};
-	find['main'] = {};
 	var posts = []
 	var remaining = 0
 	try {
 		await client.connect();
 		const database = client.db('psc');
 		const collection = database.collection('posts');
-		posts = await collection.find(find).sort({ published_at: -1 }).toArray();
+		posts = await collection.find(find).sort({ "last_updated": 1 }).toArray();
 	} catch (error) {
 		console.log(error);
 	}
